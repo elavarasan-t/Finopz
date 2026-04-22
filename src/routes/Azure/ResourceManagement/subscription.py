@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi.concurrency import run_in_threadpool
 from utils import authenticate
-from src.schema import SubscriptionRequest
+from src.schema import SubscriptionRequest, Credentials
 from utils import limiter
 from src.controller import get_azure_subscription
 
@@ -10,9 +10,9 @@ router = APIRouter(tags=["Azure/Inventory"])
 
 @router.post('/subscription')
 @limiter.limit("50/minute")
-async def subscription_data(Data: SubscriptionRequest, request: Request, response: Response):
+async def subscription_data(Credential: Credentials, Data: SubscriptionRequest, request: Request, response: Response):
     try:
-        credential = authenticate()
+        credential = authenticate(Credential=Credential)
         response_body = await run_in_threadpool(get_azure_subscription, credential, Data.subscription_id)   
         return { "response":  response_body }
     

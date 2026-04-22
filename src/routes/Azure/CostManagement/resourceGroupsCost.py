@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi.concurrency import run_in_threadpool
 from utils import authenticate
-from src.schema import CostRequest
+from src.schema import CostRequest, Credentials
 from utils import limiter
 from src.controller import get_resources_groups_cost
 
@@ -10,11 +10,11 @@ router = APIRouter(tags=["Azure/CostManagement/Cost"])
 
 @router.post('/resourceGroupsCost')
 @limiter.limit("50/minute")
-async def resourceGroupsCost(Data: CostRequest, request: Request, response: Response):
+async def resourceGroupsCost(Credential: Credentials, Data: CostRequest, request: Request, response: Response):
 
     try:
 
-        credential = authenticate() 
+        credential = authenticate(Credential=Credential) 
 
         cost_response = await run_in_threadpool(
             get_resources_groups_cost,

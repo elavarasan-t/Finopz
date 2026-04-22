@@ -16,9 +16,9 @@ packages needs to be installed:
 7. pip install azure-mgmt-costmanagement - CostManagementClient
 8. pip install msgraph-sdk - fro getting tenant data
 9. pip install fastapi-limiter - limits the api requests 
+10. pip install pycryptodome - aes encrytion and decryption
 
 Grouping inputs:
-
 1. None
 2. ResourceGroup
 3. ResourceId

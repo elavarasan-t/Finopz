@@ -1,6 +1,18 @@
 import os
 from azure.identity import ClientSecretCredential
 from fastapi import HTTPException
+from src.schema import Credentials
+
+def authenticate(Credential: Credentials):
+    try:
+        credential = ClientSecretCredential(tenant_id=Credential.AZURE_TENANT_ID, client_id=Credential.AZURE_CLIENT_ID, client_secret=Credential.AZURE_CLIENT_SECRET)
+        return credential 
+    
+    except Exception as error:
+        raise HTTPException(status_code=500,detail="Authentication Failed")
+
+""" 
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -15,4 +27,6 @@ def authenticate():
         return credential 
     
     except Exception as error:
-        raise HTTPException(status_code=500,detail="Authentication Failed")
+        raise HTTPException(status_code=500,detail="Authentication Failed") 
+
+"""

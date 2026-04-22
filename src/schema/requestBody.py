@@ -24,4 +24,9 @@ class CostRequest(BaseModel):
     end_date: Optional[str] = end_date 
     granularity: Optional[str] = "None" 
     grouping: Optional[str] = "None"
+
+class Credentials(BaseModel):
+    AZURE_TENANT_ID : str
+    AZURE_CLIENT_ID : str
+    AZURE_CLIENT_SECRET : str
     

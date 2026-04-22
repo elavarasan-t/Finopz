@@ -3,16 +3,17 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import JSONResponse
 from utils import authenticate
 from fastapi.concurrency import run_in_threadpool
+from src.schema import Credentials
 from utils import limiter
 from src.controller import get_subscriptions_cost
 
 router = APIRouter(tags=["Azure/CostManagement/Cost"])
 
-@router.get('/subscriptionsCost')
+@router.post('/subscriptionsCost')
 @limiter.limit("50/minute")
-async def subscriptions_cost(request: Request, response: Response):
+async def subscriptions_cost(Credential: Credentials, request: Request, response: Response):
     try:
-        credential = authenticate()
+        credential = authenticate(Credential=Credential)
 
         cost_response = await run_in_threadpool(get_subscriptions_cost, credential)
 
