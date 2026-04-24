@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi.concurrency import run_in_threadpool
-from utils import authenticate
+from utils import AzureAuth
 from src.schema import CostRequest, Credentials
 from utils import limiter
 from src.controller import get_azure_forecast_cost
@@ -13,12 +13,13 @@ router = APIRouter(tags=["Azure/CostManagement/Cost"])
 async def forecastcost(Credential: Credentials, Data: CostRequest, request: Request, response: Response):
 
     try:
-        credential = authenticate(Credential=Credential)
+        azure_auth = AzureAuth(Credential=Credential)
+        credentials = azure_auth.authenticate()
         
         forecast_response = await run_in_threadpool(
             get_azure_forecast_cost, 
             Data.scope, 
-            credential,
+            credentials,
             Data.grouping,
             Data.start_date,
             Data.end_date,

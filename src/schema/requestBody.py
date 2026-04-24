@@ -26,7 +26,7 @@ class CostRequest(BaseModel):
     grouping: Optional[str] = "None"
 
 class Credentials(BaseModel):
-    AZURE_TENANT_ID : str
-    AZURE_CLIENT_ID : str
-    AZURE_CLIENT_SECRET : str
+    azure_tenant_id : str
+    azure_client_id : str
+    azure_client_secret : str
     

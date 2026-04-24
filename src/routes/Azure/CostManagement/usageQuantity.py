@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi.concurrency import run_in_threadpool
-from utils import authenticate
+from utils import AzureAuth
 from src.schema import CostRequest, Credentials
 from utils import limiter
 from src.controller import get_usage
@@ -12,7 +12,8 @@ router = APIRouter(tags=["Azure/CostManagement/Usage"])
 @limiter.limit("50/minute")
 async def usage(Credential: Credentials, Data: CostRequest, request: Request, response: Response):
     try:
-        credentials = authenticate(Credential=Credential)
+        azure_auth = AzureAuth(Credential=Credential)
+        credentials = azure_auth.authenticate()
         
         usage_response = await run_in_threadpool(
             get_usage,

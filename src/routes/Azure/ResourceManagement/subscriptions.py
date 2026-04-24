@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi.concurrency import run_in_threadpool
-from utils import authenticate
-from utils import limiter
 from src.schema import Credentials
 from src.controller import get_azure_subscriptions
+from utils import AzureAuth
+from utils import limiter
 
 router = APIRouter(tags=["Azure/Inventory"])
 
@@ -16,10 +16,11 @@ async def list_subscriptions(
     response: Response
 ):
     try:
-        credentials = authenticate(Credential=Credential)
-        
+
+        azure_auth = AzureAuth(Credential=Credential)
+        credentials = azure_auth.authenticate()
         response_body = await run_in_threadpool(get_azure_subscriptions, credentials)
-        
+
         return {
             "response" : response_body
         }
