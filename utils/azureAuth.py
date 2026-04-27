@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from azure.identity import ClientSecretCredential
 from .aesDecryption import DecryptAES
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 from src.schema import Credentials
 
@@ -30,10 +30,10 @@ class AzureAuth:
     
         except Exception as error:
             raise HTTPException(
-                status_code=401,
+                status_code=status.HTTP_401_UNAUTHORIZED,
                 detail={
                     "success":False,
                     "message":"Invalid Credential",
-                    "status_code": 401
+                    "status_code": status.HTTP_401_UNAUTHORIZED
                 }
             )

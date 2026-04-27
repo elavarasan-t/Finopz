@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Request, Response, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.concurrency import run_in_threadpool
 from utils import AzureAuth
@@ -22,15 +22,20 @@ async def subscription_data(Credential: Credentials, Data: SubscriptionRequest, 
             "errors": None
          }
     
+    except HTTPException as exc:
+        raise exc 
+    
     except Exception as error:
         return JSONResponse(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             content={
                 "success": False,
-                "status_code": 404,
+                "status_code": status.HTTP_404_NOT_FOUND,
                 "data": [],
-                "error" : str(error)
+                "message" : "Invalid Subscription ID"
                 },
             headers=dict(response.headers)
         )
+    
+
         

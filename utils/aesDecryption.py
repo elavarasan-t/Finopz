@@ -2,7 +2,7 @@ import base64
 import json
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 
 class DecryptAES:
 
@@ -27,9 +27,9 @@ class DecryptAES:
         
         except Exception as error:
             raise HTTPException(
-                status_code=401,
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail={
                     "success":False,
                     "message":"Decryption Error",
-                    "status_code": 401
+                    "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR
             }) 
