@@ -1,28 +1,27 @@
-from utils import AzureCostUsage
+from utils import AzureCostManagement
 from utils import DataSetMethods
 
-def get_azure_cost_usage_daily(scope, credential, grouping, cost_type, start_date, end_date, granularity):
+def get_cost_monthly(scope, credential, grouping, cost_type, start_date, end_date, granularity):
 
-    azure_cost_usage = AzureCostUsage(
+    azure_cost = AzureCostManagement(
                 scope=scope,
                 credential=credential,
                 grouping=DataSetMethods.grouping(grouping_term="SubscriptionCost"),
                 cost_type=cost_type,
                 from_date=start_date,
                 to_date=end_date,
-                granularity="DAILY"
+                granularity="MONTHLY"
             )
     
-    cost_usage = azure_cost_usage.costUsage()
+    cost = azure_cost.costManagement()
     
     subscription_id = scope.split('/')[2]
 
-    columns = cost_usage.get("column",[])
+    columns = cost.get("column",[])
 
     id_pretaxcost = columns.index("PreTaxCost")
     id_pretaxcost_usd = columns.index("PreTaxCostUSD")
-    id_usage_quantity = columns.index("UsageQuantity")
-    id_usage_date = columns.index("UsageDate")
+    id_billing_month = columns.index("BillingMonth")
     id_resource_location = columns.index("ResourceLocation")
     id_rg = columns.index("ResourceGroupName")
     id_res = columns.index("ResourceId")
@@ -37,8 +36,8 @@ def get_azure_cost_usage_daily(scope, credential, grouping, cost_type, start_dat
     id_charge_type = columns.index("ChargeType")
     id_currency = columns.index("Currency")
 
-    #total_cost = sum(row[id_pretaxcost] for row in cost_usage.get("row", []))
-    #total_cost_usd = sum(row[id_pretaxcost_usd] for row in cost_usage.get("row", []))
+    #total_cost = sum(row[id_pretaxcost] for row in cost.get("row", []))
+    #total_cost_usd = sum(row[id_pretaxcost_usd] for row in cost.get("row", []))
 
     response = {
         subscription_id : {
@@ -47,12 +46,11 @@ def get_azure_cost_usage_daily(scope, credential, grouping, cost_type, start_dat
         }
     }
 
-    for row in cost_usage.get("row", []):
+    for row in cost.get("row", []):
 
         pretaxcost = row[id_pretaxcost]
         pretaxcost_usd = row[id_pretaxcost_usd]
-        usage_quantity = row[id_usage_quantity]
-        usage_date = row[id_usage_date]
+        billing_month = row[id_billing_month]
         resource_location = row[id_resource_location]
         resource_group = row[id_rg] or f"unknown-rg"
         resource_id = row[id_res] or f"unknown-resource"
@@ -75,9 +73,8 @@ def get_azure_cost_usage_daily(scope, credential, grouping, cost_type, start_dat
         response[subscription_id][resource_group]["resources"].append({
             "pretaxcost" : pretaxcost,
             "currency": currency,
-            "pretaxcost_USD": pretaxcost_usd,
-            "usageQuantity": usage_quantity,
-            "usageDate": usage_date,
+            "pretaxcostUSD": pretaxcost_usd,
+            "billingMonth": billing_month,
             "resourceLocation": resource_location,
             "resourceId": resource_id,
             "serviceFamily": service_family,

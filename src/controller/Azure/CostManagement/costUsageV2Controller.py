@@ -6,7 +6,7 @@ def get_azure_cost_usage_v2(scope, credential, grouping, cost_type, start_date, 
     azure_cost_usage = AzureCostUsage(
                 scope=scope,
                 credential=credential,
-                grouping=DataSetMethods.grouping(grouping_term=grouping),
+                grouping=DataSetMethods.grouping(grouping_term="SubscriptionCost"),
                 cost_type=cost_type,
                 from_date=start_date,
                 to_date=end_date,

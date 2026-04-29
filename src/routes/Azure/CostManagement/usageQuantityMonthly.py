@@ -4,29 +4,28 @@ from fastapi.concurrency import run_in_threadpool
 from utils import AzureAuth
 from src.schema import CostRequest, Credentials
 from utils import limiter
-from src.controller import get_azure_cost_usage_daily
+from src.controller import get_usage_monthly
 
-router = APIRouter(tags=["Azure/CostManagement/CostUsage"])
+router = APIRouter(tags=["Azure/CostManagement/Usage"])
 
-@router.post('/costUsageDaily')
+@router.post('/usageMonthly')
 @limiter.limit("50/minute")
-async def cost_usage_daily(Credential: Credentials, Data: CostRequest, request: Request, response: Response):
+async def usage_monthly(Credential: Credentials, Data: CostRequest, request: Request, response: Response):
     try:
         azure_auth = AzureAuth(Credential=Credential)
         credentials = azure_auth.authenticate()
         data = []
-        cost_response = await run_in_threadpool(
-            get_azure_cost_usage_daily, 
-            Data.scope, 
+        usage_response = await run_in_threadpool(
+            get_usage_monthly,
+            Data.scope,
             credentials,
             Data.grouping,
-            Data.cost_type,
             Data.start_date,
             Data.end_date,
-            Data.granularity 
+            Data.granularity
         )
 
-        data.append(cost_response)
+        data.append(usage_response)
 
         return {
             "success": True, 
@@ -44,4 +43,3 @@ async def cost_usage_daily(Credential: Credentials, Data: CostRequest, request: 
             content={"detail": str(error)},
             headers=dict(response.headers)
         )
-

@@ -10,7 +10,7 @@ router = APIRouter(tags=["Azure/CostManagement/CostUsage"])
 
 @router.post('/costUsage')
 @limiter.limit("50/minute")
-async def cost(Credential: Credentials, Data: CostRequest, request: Request, response: Response):
+async def cost_usage(Credential: Credentials, Data: CostRequest, request: Request, response: Response):
     try:
         azure_auth = AzureAuth(Credential=Credential)
         credentials = azure_auth.authenticate()

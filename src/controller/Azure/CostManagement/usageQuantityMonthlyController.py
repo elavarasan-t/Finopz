@@ -1,26 +1,24 @@
-from utils import AzureCostUsage
+from utils import AzureUsageQuantity
 from utils import DataSetMethods
 
-def get_azure_cost_usage_monthly(scope, credential, grouping, cost_type, start_date, end_date, granularity):
+def get_usage_monthly(scope, credentials, grouping, start_date, end_date, granularity):
 
-    azure_cost_usage = AzureCostUsage(
-                scope=scope,
-                credential=credential,
-                grouping=DataSetMethods.grouping(grouping_term="SubscriptionCost"),
-                cost_type=cost_type,
-                from_date=start_date,
-                to_date=end_date,
-                granularity="MONTHLY"
-            )
-    
-    cost_usage = azure_cost_usage.costUsage()
-    
+    azure_usage = AzureUsageQuantity(
+        scope=scope,
+        credential=credentials,
+        grouping=DataSetMethods.grouping(grouping_term="SubscriptionCost"),
+        from_date=start_date,
+        to_date=end_date,
+        granularity="MONTHLY"
+    )
+
+    usage = azure_usage.usageQuantity()
+
     subscription_id = scope.split('/')[2]
 
-    columns = cost_usage.get("column",[])
+    columns = usage.get("column",[])
+    rows = usage.get("row", [])
 
-    id_pretaxcost = columns.index("PreTaxCost")
-    id_pretaxcost_usd = columns.index("PreTaxCostUSD")
     id_usage_quantity = columns.index("UsageQuantity")
     id_billing_month = columns.index("BillingMonth")
     id_resource_location = columns.index("ResourceLocation")
@@ -33,24 +31,13 @@ def get_azure_cost_usage_monthly(scope, credential, grouping, cost_type, start_d
     id_meter = columns.index("Meter")
     id_product = columns.index("Product")
     id_unitofmeasure = columns.index("UnitOfMeasure")
-    id_pricingmodel = columns.index("PricingModel")
-    id_charge_type = columns.index("ChargeType")
-    id_currency = columns.index("Currency")
-
-    #total_cost = sum(row[id_pretaxcost] for row in cost_usage.get("row", []))
-    #total_cost_usd = sum(row[id_pretaxcost_usd] for row in cost_usage.get("row", []))
 
     response = {
-        subscription_id : {
-            #"subscription_total_cost" : round(total_cost, 2),
-            #"subscription_total_cost_USD" : round(total_cost_usd, 2) 
-        }
+        subscription_id : { }
     }
 
-    for row in cost_usage.get("row", []):
+    for row in rows:
 
-        pretaxcost = row[id_pretaxcost]
-        pretaxcost_usd = row[id_pretaxcost_usd]
         usage_quantity = row[id_usage_quantity]
         billing_month = row[id_billing_month]
         resource_location = row[id_resource_location]
@@ -63,9 +50,6 @@ def get_azure_cost_usage_monthly(scope, credential, grouping, cost_type, start_d
         meter = row[id_meter]
         product = row[id_product]
         unitofmeasure = row[id_unitofmeasure]
-        pricingmodel = row[id_pricingmodel]
-        charge_type = row[id_charge_type]
-        currency = row[id_currency]
 
         if resource_group not in response[subscription_id]:
             response[subscription_id][resource_group] = {
@@ -73,10 +57,7 @@ def get_azure_cost_usage_monthly(scope, credential, grouping, cost_type, start_d
                     }
   
         response[subscription_id][resource_group]["resources"].append({
-            "pretaxcost" : pretaxcost,
-            "currency": currency,
-            "pretaxcostUSD": pretaxcost_usd,
-            "usageQuantity": usage_quantity,
+            "usage_quantity": usage_quantity,
             "billingMonth": billing_month,
             "resourceLocation": resource_location,
             "resourceId": resource_id,
@@ -86,9 +67,7 @@ def get_azure_cost_usage_monthly(scope, credential, grouping, cost_type, start_d
             "meterSubCategory": meter_subcategory,
             "meter": meter,
             "product": product,
-            "unitofmeasure": unitofmeasure,
-            "pricingmodel": pricingmodel,
-            "charge_type": charge_type
+            "unitofmeasure": unitofmeasure
         })
 
     return response

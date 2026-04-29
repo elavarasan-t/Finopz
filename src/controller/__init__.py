@@ -7,6 +7,8 @@ from .Azure.ResourceManagement.subscriptionsController import get_azure_subscrip
 from .Azure.ResourceManagement.subscriptionResourcesController import get_azure_subscription_resources
 
 from .Azure.CostManagement.costController import get_azure_cost
+from .Azure.CostManagement.costDailyController import get_cost_daily
+from .Azure.CostManagement.costMonthlyController import get_cost_monthly
 from .Azure.CostManagement.costV2Controller import get_azure_cost_v2
 from .Azure.CostManagement.costUsageController import get_azure_cost_usage
 from .Azure.CostManagement.costUsageV2Controller import get_azure_cost_usage_v2
@@ -20,6 +22,8 @@ from .Azure.CostManagement.resourceGroupsCostController import get_resources_gro
 from .Azure.CostManagement.resourcesCostController import get_resources_cost
 
 from .Azure.CostManagement.usageQuantityController import get_usage
+from .Azure.CostManagement.usageQuantityDailyController import get_usage_daily
+from .Azure.CostManagement.usageQuantityMonthlyController import get_usage_monthly
 from .Azure.CostManagement.individualResourceUsageController import get_individual_resource_usage
 
 from .Azure.tenantController import get_tenent_data
